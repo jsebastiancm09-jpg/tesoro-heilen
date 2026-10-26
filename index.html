@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Un tesoro para Heilen</title>
+<meta name="theme-color" content="#f4e7c9">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=IM+Fell+English:ital@0;1&family=Pirata+One&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parch:#f4e7c9; --parch2:#ecd9ad; --ink:#3a2817; --soft:#7b6345; --faint:#c9b48a;
+    --sea:#2c6e8a; --sea2:#bfdde2; --red:#b8322a; --gold:#e3a72f; --night:#14273a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{
+    background:
+      radial-gradient(circle at 15% 8%, rgba(255,250,235,.8) 0, transparent 45%),
+      radial-gradient(circle at 90% 85%, rgba(205,170,110,.25) 0, transparent 50%),
+      var(--parch);
+    color:var(--ink);
+    font-family:'IM Fell English',Georgia,serif;font-size:19px;line-height:1.45;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation;overflow-x:hidden;
+  }
+  .pirate{font-family:'Pirata One',Georgia,serif;font-weight:400;letter-spacing:.5px}
+  .hand{font-family:'Caveat',cursive}
+
+  .screen{
+    position:relative;min-height:100vh;min-height:100dvh;max-width:480px;margin:0 auto;
+    padding:56px 16px calc(28px + env(safe-area-inset-bottom));
+    display:none;flex-direction:column;align-items:center;text-align:center;
+  }
+  .screen.active{display:flex;animation:fadeIn .7s ease both}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  h1{font-family:'Pirata One',Georgia,serif;font-weight:400;font-size:56px;line-height:1;margin:4px 0 2px}
+  h2{font-family:'Pirata One',Georgia,serif;font-weight:400;font-size:42px;line-height:1.05;margin:2px 0 6px}
+  .kicker{font-style:italic;color:var(--soft);font-size:18px;margin-top:8px}
+  .lead{max-width:36ch;margin:6px auto 0}
+  .tag{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--soft);margin-top:4px}
+  .back{align-self:flex-start;background:none;border:none;font-family:inherit;font-size:17px;color:var(--soft);cursor:pointer;padding:4px 2px;text-decoration:underline}
+
+  .btn{
+    font-family:'Pirata One',Georgia,serif;font-size:27px;line-height:1;
+    color:var(--ink);background:var(--parch);
+    padding:12px 30px 13px;border:2px solid var(--ink);
+    border-radius:255px 18px 225px 18px/18px 225px 18px 255px;
+    box-shadow:3px 4px 0 var(--ink);cursor:pointer;
+    transition:transform .12s ease,box-shadow .12s ease;
+  }
+  .btn:active{transform:translate(3px,4px);box-shadow:0 0 0 var(--ink)}
+  .btn.red{background:var(--red);color:var(--parch)}
+
+  .paper{
+    background:var(--parch2);border:1.6px solid var(--ink);
+    border-radius:6px 18px 8px 22px/20px 6px 22px 8px;
+    box-shadow:0 6px 18px rgba(58,40,23,.18);
+    padding:18px 18px 20px;
+  }
+
+  /* ---------- intro ---------- */
+  #beach{width:100%;max-width:420px;margin:6px auto 0;touch-action:manipulation}
+  #bottleBob{animation:bob 3s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-3deg)}}
+  #bottleWig,#cork,#paperIn{transform-box:fill-box;transform-origin:center;transition:transform .25s ease}
+  .waves{animation:waves 6s linear infinite}
+  @keyframes waves{from{transform:translateX(0)}to{transform:translateX(-60px)}}
+  #bottleHit{cursor:pointer}
+  #tapRow{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:4px}
+  .pips{display:flex;gap:10px}
+  .pip{width:14px;height:14px;border-radius:50%;border:1.6px solid var(--ink);transition:background .2s}
+  .pip.on{background:var(--red)}
+  .tapText{font-style:italic;color:var(--soft)}
+  #note{display:none;text-align:left;margin-top:8px;transform:rotate(-1deg)}
+  #note.show{display:block;animation:unroll .8s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes unroll{from{opacity:0;transform:scaleY(.2) rotate(-1deg)}to{opacity:1;transform:scaleY(1) rotate(-1deg)}}
+  #note p{margin:0 0 10px}
+  #note .sal{font-family:'Pirata One',Georgia,serif;font-size:28px}
+  #note .center{text-align:center;margin-top:14px}
+
+  /* ---------- map ---------- */
+  #mapSvg{width:100%;max-width:440px;margin:4px auto 0}
+  #mapSvg text{font-family:'IM Fell English',Georgia,serif;fill:var(--ink)}
+  #mapSvg .pirateTxt{font-family:'Pirata One',Georgia,serif}
+  .seg{fill:none;stroke:#bba47a;stroke-width:2.4;stroke-dasharray:2 7;stroke-linecap:round;transition:stroke .4s}
+  .seg.on{stroke:var(--red)}
+  .node .art{transition:opacity .5s}
+  .node.locked .art{opacity:.42}
+  .node .ring{opacity:0;fill:none;stroke:var(--gold);stroke-width:3;transform-box:fill-box;transform-origin:center}
+  .node.current .ring{animation:pulse 1.6s ease-out infinite}
+  @keyframes pulse{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.35);opacity:0}}
+  .node .check{opacity:0;transition:opacity .5s}
+  .node.done .check{opacity:1}
+  .node .hit{fill:transparent;cursor:pointer}
+  #mapHint{font-style:italic;color:var(--soft);min-height:27px}
+  .fragsBox{width:100%;margin-top:10px;text-align:left}
+  .fragsBox h3{font-family:'Pirata One',Georgia,serif;font-weight:400;font-size:26px;text-align:center;margin-bottom:6px}
+  .frag{display:flex;gap:10px;align-items:baseline;padding:8px 12px;margin:6px 0;border:1.4px dashed var(--faint);border-radius:10px;transition:all .5s}
+  .frag .fn{font-family:'Pirata One',Georgia,serif;color:var(--red);font-size:20px;flex:none}
+  .frag .ft{font-style:italic;color:var(--soft)}
+  .frag.got{border-style:solid;border-color:var(--ink);background:rgba(236,217,173,.6)}
+  .frag.got .ft{color:var(--ink)}
+  .frag.new{animation:glow 1.6s ease 2}
+  @keyframes glow{50%{box-shadow:0 0 0 4px rgba(227,167,47,.55)}}
+
+  /* ---------- compass ---------- */
+  #compass{width:min(300px,84vw);margin:14px auto 6px;touch-action:none;cursor:grab}
+  #compass text{font-family:'Pirata One',Georgia,serif}
+  #nGlow{transition:opacity .2s}
+  #compass.locked #needle{filter:drop-shadow(0 0 6px rgba(227,167,47,.9))}
+
+  /* ---------- reward ---------- */
+  .reward{display:none;width:100%;margin-top:14px;text-align:left}
+  .reward.show{display:block;animation:unroll .8s cubic-bezier(.2,.8,.2,1) both}
+  .reward .rtext{margin-bottom:12px}
+  .fragCard{display:block;padding:12px 14px;border:1.8px solid var(--ink);border-radius:12px;background:var(--parch);margin-bottom:14px}
+  .fragCard .fl{display:block;font-family:'Pirata One',Georgia,serif;color:var(--red);font-size:21px}
+  .fragCard .ftxt{font-family:'Caveat',cursive;font-size:26px;line-height:1.2}
+  .reward .center{text-align:center}
+
+  /* ---------- flag ---------- */
+  #flagStage{width:min(280px,78vw);margin:6px auto 0}
+  #flagG{transition:transform 1.8s cubic-bezier(.3,.8,.3,1)}
+  .opts{width:100%;margin-top:6px;transition:opacity .4s}
+  .opts.gone{opacity:0;pointer-events:none;height:0;overflow:hidden;margin:0}
+  .optRow{margin:10px 0}
+  .optLabel{display:block;font-family:'Pirata One',Georgia,serif;font-size:21px;color:var(--red);margin-bottom:4px}
+  .optList{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+  .opt{font-family:inherit;font-size:17px;color:var(--ink);background:transparent;border:1.6px solid var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+  .opt.sel{background:var(--ink);color:var(--parch)}
+  .sw{width:40px;height:40px;border-radius:50%;border:2px solid var(--parch2);background:var(--sw);box-shadow:0 0 0 1.6px var(--ink);cursor:pointer}
+  .sw.sel{box-shadow:0 0 0 3px var(--gold),0 0 0 4.6px var(--ink)}
+  #izarBtn{margin-top:12px}
+
+  /* ---------- game ---------- */
+  #gameWrap{position:relative;width:100%;margin-top:10px;border:2px solid var(--ink);border-radius:18px;overflow:hidden;background:var(--night)}
+  #game{display:block;width:100%;touch-action:none}
+  .hud{position:absolute;left:10px;right:10px;top:10px;display:flex;align-items:center;gap:10px;pointer-events:none}
+  .coinsPill{flex:none;background:rgba(244,231,201,.92);border:1.4px solid var(--ink);border-radius:999px;padding:2px 12px;font-family:'Pirata One',Georgia,serif;font-size:20px}
+  .bar{flex:1;height:10px;border-radius:10px;background:rgba(244,231,201,.25);overflow:hidden;border:1px solid rgba(244,231,201,.5)}
+  .bar i{display:block;height:100%;width:0;background:var(--gold)}
+  #gOverlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;background:rgba(20,39,58,.78);color:var(--parch)}
+  #gOverlay.show{display:flex}
+  #gOverlay .big{font-family:'Pirata One',Georgia,serif;font-size:34px;line-height:1.1}
+
+  /* ---------- dig ---------- */
+  .digWrap{position:relative;width:min(340px,88vw);margin:12px auto 0}
+  #dig{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;border:2px solid var(--ink);
+       border-radius:50% 46% 52% 48%/48% 52% 46% 50%;box-shadow:0 8px 20px rgba(58,40,23,.25)}
+  .under{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+         background:radial-gradient(circle at 50% 52%,#5e4020 0,#8f6a35 38%,#c9a868 64%,#dcc085 80%)}
+  #chestSvg{width:72%;cursor:pointer}
+  #chestSvg.wiggle{animation:wig 1.2s ease-in-out infinite}
+  @keyframes wig{0%,100%{transform:rotate(0)}10%{transform:rotate(-4deg)}20%{transform:rotate(4deg)}30%{transform:rotate(0)}}
+  #lid{transition:transform .9s cubic-bezier(.3,1.5,.5,1);transform-box:fill-box;transform-origin:0% 100%}
+  #lid.open{transform:translate(-4px,-40px) rotate(-16deg)}
+  #rays{opacity:0;transition:opacity .8s}
+  #rays.on{opacity:1;animation:shine 2s ease-in-out infinite}
+  @keyframes shine{50%{opacity:.6}}
+  #sand{position:absolute;inset:0;width:100%;height:100%;touch-action:none;transition:opacity 1s;cursor:crosshair}
+  #digHint{font-style:italic;color:var(--soft);margin-top:12px;min-height:28px}
+  .coinP{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;pointer-events:none;z-index:5;
+         background:radial-gradient(circle at 35% 35%,#fff6c2,#e3a72f 55%,#a8741a);border:1px solid #7a5310}
+
+  /* ---------- final ---------- */
+  .poster{
+    position:relative;width:min(310px,86vw);margin:10px auto 4px;padding:16px 18px 18px;
+    background:#ead29b;border:2px solid var(--ink);outline:5px double rgba(58,40,23,.55);outline-offset:-12px;
+    box-shadow:0 10px 24px rgba(58,40,23,.3);transform:rotate(-1.8deg);
+  }
+  .pTop{font-size:58px;line-height:1}
+  .pFrame{width:100%;aspect-ratio:7/5;margin:8px 0 10px;border:2.5px solid var(--ink);overflow:hidden;background:#1c1a1a}
+  .pFrame svg,.pFrame img{display:block;width:100%;height:100%;object-fit:cover}
+  .pFrame img{filter:sepia(.45) contrast(1.05)}
+  .pName{font-size:38px;line-height:1;text-transform:uppercase}
+  .pCrime{font-style:italic;margin:6px 0 8px;font-size:17px}
+  .pReward{display:flex;flex-direction:column;align-items:center;border-top:1.6px solid var(--ink);padding-top:6px}
+  .pReward span{font-size:20px;color:var(--soft)}
+  .pReward b{font-family:'Pirata One',Georgia,serif;font-weight:400;font-size:36px;color:var(--red);line-height:1}
+  .secret{width:100%;margin-top:20px;text-align:left}
+  .secret h3{font-family:'Pirata One',Georgia,serif;font-weight:400;font-size:26px;text-align:center}
+  .secretTxt{font-family:'Caveat',cursive;font-size:27px;line-height:1.25;text-align:center;padding:6px 4px}
+  .secretTxt span{opacity:0;transition:opacity .9s}
+  .secretTxt span.in{opacity:1}
+  .letter{
+    text-align:left;width:100%;margin-top:14px;padding:18px 18px 20px;
+    background:repeating-linear-gradient(to bottom,transparent 0,transparent 33px,rgba(58,40,23,.12) 33px,rgba(58,40,23,.12) 34px),var(--parch);
+    border:1.6px solid var(--ink);border-radius:20px 6px 24px 8px/8px 24px 6px 20px;
+    font-family:'Caveat',cursive;font-size:25px;line-height:34px;min-height:150px;
+  }
+  .letter p{margin:0 0 14px}
+  .letter p:empty{display:none}
+  .sign{align-self:flex-end;font-family:'Caveat',cursive;font-size:27px;margin-top:6px;opacity:0;transition:opacity 1s}
+  .sign.show{opacity:1}
+  #endRow{opacity:0;pointer-events:none;transition:opacity .8s;margin-top:10px}
+  #endRow.show{opacity:1;pointer-events:auto}
+  .linkbtn{background:none;border:none;font-family:'Pirata One',Georgia,serif;font-size:24px;color:var(--soft);text-decoration:underline;cursor:pointer}
+
+  /* ---------- toast & mute ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));z-index:30;
+    transform:translate(-50%,20px);opacity:0;pointer-events:none;
+    background:var(--parch);border:1.6px solid var(--ink);border-radius:14px;
+    box-shadow:3px 4px 0 var(--ink);padding:10px 16px;max-width:88vw;text-align:center;
+    transition:opacity .3s ease,transform .3s ease;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast strong{font-family:'Pirata One',Georgia,serif;font-weight:400;font-size:24px;display:block;line-height:1.1}
+  #mute{position:fixed;top:calc(10px + env(safe-area-inset-top));right:10px;z-index:40;width:38px;height:38px;border-radius:50%;
+        border:1.6px solid var(--ink);background:var(--parch);font-size:19px;cursor:pointer;box-shadow:2px 3px 0 var(--ink)}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<button id="mute" aria-label="Sonido">🔊</button>
+
+<!-- ================= 1. BOTELLA ================= -->
+<section class="screen active" id="intro">
+  <p class="kicker">Llegó un mensaje en una botella para la</p>
+  <h1>Capitana<br><span id="capName"></span></h1>
+  <svg id="beach" viewBox="0 0 360 250" aria-label="Una botella en la orilla del mar">
+    <defs><clipPath id="seaClip"><rect x="0" y="80" width="360" height="100"/></clipPath></defs>
+    <g stroke="#3a2817" stroke-width="1.4" fill="none" stroke-linecap="round">
+      <circle cx="302" cy="42" r="19" fill="#f6d36b"/>
+      <path d="M302 14 L302 8 M330 42 L336 42 M322 22 L327 17 M282 22 L277 17 M322 62 L327 67"/>
+      <path d="M52 44 q6 -6 12 0 q6 -6 12 0"/>
+      <path d="M98 28 q4 -4 8 0 q4 -4 8 0"/>
+      <path d="M140 50 q3 -3 6 0 q3 -3 6 0"/>
+    </g>
+    <rect x="0" y="80" width="360" height="100" fill="#bfdde2"/>
+    <path d="M0 80 L360 80" stroke="#3a2817" stroke-width="1.3"/>
+    <g clip-path="url(#seaClip)">
+      <g class="waves" fill="none" stroke="#5f93a3" stroke-width="1.4" stroke-linecap="round" id="waveG"></g>
+    </g>
+    <path d="M0 160 C80 150 140 172 200 164 C260 156 310 170 360 160 L360 250 L0 250Z" fill="#e8cf96" stroke="#3a2817" stroke-width="1.5"/>
+    <path d="M0 156 C80 146 140 168 200 160 C260 152 310 166 360 156" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="14 10" opacity=".8"/>
+    <g id="sandDots"></g>
+    <g transform="translate(62 214)" stroke="#3a2817" stroke-width="1.2">
+      <path d="M0 -12 L3.5 -4 L12 -3.5 L5.5 2 L7.5 10.5 L0 6 L-7.5 10.5 L-5.5 2 L-12 -3.5 L-3.5 -4Z" fill="#ec9a6d"/>
+    </g>
+    <g transform="translate(300 222)" stroke="#3a2817" stroke-width="1.2" fill="#f6ddd0">
+      <path d="M-11 4 C-11 -10 11 -10 11 4 Z"/><path d="M0 4 L0 -6 M-5 4 L-3 -5 M5 4 L3 -5" fill="none"/>
+    </g>
+    <g id="bottlePos" transform="translate(180 176)">
+      <g id="bottleBob">
+        <g transform="rotate(-72)">
+          <g id="bottleWig">
+            <g id="paperIn">
+              <rect x="-11" y="-14" width="22" height="46" rx="5" fill="#f4e7c9" stroke="#3a2817" stroke-width="1"/>
+              <line x1="-11" y1="9" x2="11" y2="9" stroke="#b8322a" stroke-width="3"/>
+            </g>
+            <path d="M-22 40 L-22 -10 C-22 -24 -8 -28 -8 -40 L-8 -54 L8 -54 L8 -40 C8 -28 22 -24 22 -10 L22 40 C22 49 -22 49 -22 40Z"
+                  fill="#cfe8dc" fill-opacity=".55" stroke="#3a2817" stroke-width="1.6"/>
+            <path d="M-15 -6 L-15 34" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".75"/>
+            <path d="M-10 -54 L10 -54" stroke="#3a2817" stroke-width="3" stroke-linecap="round"/>
+            <g id="cork">
+              <rect x="-7" y="-68" width="14" height="15" rx="2" fill="#b07a45" stroke="#3a2817" stroke-width="1.3"/>
+              <path d="M-3 -64 L-3 -60 M2 -66 L2 -61" stroke="#3a2817" stroke-width="1"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+    <circle id="bottleHit" cx="180" cy="168" r="64" fill="transparent"/>
+  </svg>
+  <div id="tapRow">
+    <div class="tapText">Toca la botella 3 veces para destaparla</div>
+    <div class="pips"><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+  </div>
+  <div class="paper" id="note">
+    <p class="sal" id="noteHi"></p>
+    <p>En algún lugar de este mapa hay un tesoro escondido solo para ti.</p>
+    <p>Para llegar a él tendrás que conquistar cuatro islas, y en cada una ganarás un fragmento de un mensaje secreto.</p>
+    <p>¿Lista para zarpar?</p>
+    <div class="center"><button class="btn red" id="sailBtn">¡Zarpar!</button></div>
+  </div>
+</section>
+
+<!-- ================= 2. MAPA ================= -->
+<section class="screen" id="map">
+  <h2>Mapa del tesoro</h2>
+  <div id="mapHint">Navegando…</div>
+  <svg id="mapSvg" viewBox="0 0 360 470" aria-label="Mapa del tesoro"></svg>
+  <div class="fragsBox">
+    <h3>Mensaje secreto</h3>
+    <div id="frags"></div>
+  </div>
+</section>
+
+<!-- ================= 3a. BRÚJULA ================= -->
+<section class="screen" id="c1">
+  <button class="back" data-back>← Volver al mapa</button>
+  <div class="tag">Isla 1 de 4 · Isla de la Brújula</div>
+  <h2>La brújula loca</h2>
+  <p class="lead">Una tormenta mágica volvió loca la aguja. Atrápala con el dedo y llévala hasta el norte <b>(N)</b>.</p>
+  <svg id="compass" viewBox="-130 -130 260 260" aria-label="Brújula"></svg>
+  <div class="reward" id="rw0">
+    <p class="rtext"></p>
+    <div class="fragCard"><span class="fl">Fragmento 1 de 4</span><span class="ftxt"></span></div>
+    <div class="center"><button class="btn" data-next="0">Volver al mapa</button></div>
+  </div>
+</section>
+
+<!-- ================= 3b. BANDERA ================= -->
+<section class="screen" id="c2">
+  <button class="back" data-back>← Volver al mapa</button>
+  <div class="tag">Isla 2 de 4 · Isla de la Bandera</div>
+  <h2>Tu bandera pirata</h2>
+  <p class="lead">Toda capitana necesita su propia bandera. Diséñala como quieras y luego ízala bien alto.</p>
+  <svg id="flagStage" viewBox="0 0 236 236" aria-label="Tu bandera">
+    <path d="M10 232 C60 220 180 220 226 232" fill="#e8cf96" stroke="#3a2817" stroke-width="1.5"/>
+    <line x1="40" y1="8" x2="40" y2="228" stroke="#3a2817" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="40" cy="7" r="5" fill="#e3a72f" stroke="#3a2817" stroke-width="1.4"/>
+    <g id="flagG" style="transform:translateY(92px)">
+      <path id="flagCloth" fill="#1c1a1a" stroke="#3a2817" stroke-width="1.6"
+            d="M42 14 C90 4 130 24 212 14 L212 126 C130 136 90 116 42 126Z">
+        <animate attributeName="d" dur="2.6s" repeatCount="indefinite"
+          values="M42 14 C90 4 130 24 212 14 L212 126 C130 136 90 116 42 126Z;M42 14 C90 24 130 4 212 14 L212 126 C130 116 90 136 42 126Z;M42 14 C90 4 130 24 212 14 L212 126 C130 136 90 116 42 126Z"/>
+      </path>
+      <g id="emblem" transform="translate(127 72)"></g>
+    </g>
+  </svg>
+  <div class="opts" id="flagOpts">
+    <div class="optRow"><span class="optLabel">Color</span>
+      <div class="optList" data-key="color">
+        <button class="sw sel" data-v="#1c1a1a" style="--sw:#1c1a1a" aria-label="Negro"></button>
+        <button class="sw" data-v="#1f4e6b" style="--sw:#1f4e6b" aria-label="Azul"></button>
+        <button class="sw" data-v="#8e2420" style="--sw:#8e2420" aria-label="Rojo"></button>
+        <button class="sw" data-v="#4b2a63" style="--sw:#4b2a63" aria-label="Morado"></button>
+      </div></div>
+    <div class="optRow"><span class="optLabel">Adorno</span>
+      <div class="optList" data-key="acc">
+        <button class="opt sel" data-v="tricornio">Sombrero</button>
+        <button class="opt" data-v="lazo">Lazo</button>
+        <button class="opt" data-v="flores">Flores</button>
+        <button class="opt" data-v="corazones">Ojos de corazón</button>
+      </div></div>
+    <div class="optRow"><span class="optLabel">Cruzados</span>
+      <div class="optList" data-key="cross">
+        <button class="opt sel" data-v="huesos">Huesos</button>
+        <button class="opt" data-v="espadas">Espadas</button>
+        <button class="opt" data-v="rosas">Rosas</button>
+      </div></div>
+    <button class="btn red" id="izarBtn">Izar la bandera</button>
+  </div>
+  <div class="reward" id="rw1">
+    <p class="rtext"></p>
+    <div class="fragCard"><span class="fl">Fragmento 2 de 4</span><span class="ftxt"></span></div>
+    <div class="center"><button class="btn" data-next="1">Volver al mapa</button></div>
+  </div>
+</section>
+
+<!-- ================= 3c. TORMENTA ================= -->
+<section class="screen" id="c3">
+  <button class="back" data-back>← Volver al mapa</button>
+  <div class="tag">Isla 3 de 4 · Mar de las Tormentas</div>
+  <h2>¡Se viene la tormenta!</h2>
+  <p class="lead">Esquiva las rocas y recoge todas las monedas que puedas. Toca a la izquierda o a la derecha para mover el barco.</p>
+  <div id="gameWrap">
+    <canvas id="game"></canvas>
+    <div class="hud"><span class="coinsPill">🪙 <span id="gCoins">0</span></span><span class="bar"><i id="gBar"></i></span></div>
+    <div id="gOverlay" class="show">
+      <div class="big">Aguanta 20 segundos<br>en el mar</div>
+      <button class="btn" id="gStart">¡A navegar!</button>
+    </div>
+  </div>
+  <div class="reward" id="rw2">
+    <p class="rtext"></p>
+    <div class="fragCard"><span class="fl">Fragmento 3 de 4</span><span class="ftxt"></span></div>
+    <div class="center"><button class="btn" data-next="2">Volver al mapa</button></div>
+  </div>
+</section>
+
+<!-- ================= 3d. TESORO ================= -->
+<section class="screen" id="c4">
+  <button class="back" data-back>← Volver al mapa</button>
+  <div class="tag">Isla 4 de 4 · Isla del Tesoro</div>
+  <h2>La X marca el lugar</h2>
+  <p class="lead">El tesoro está enterrado justo aquí. Escarba la arena con el dedo.</p>
+  <div class="digWrap" id="digWrap">
+    <div id="dig">
+      <div class="under">
+        <svg id="chestSvg" viewBox="0 0 200 170" aria-label="Cofre del tesoro">
+          <defs>
+            <clipPath id="lidClip"><path d="M30 82 L30 58 C30 26 170 26 170 58 L170 82 Z"/></clipPath>
+          </defs>
+          <g id="rays" fill="#ffe9a0">
+            <path d="M100 80 L40 -10 L70 -10Z" opacity=".7"/><path d="M100 80 L88 -10 L112 -10Z" opacity=".8"/>
+            <path d="M100 80 L130 -10 L160 -10Z" opacity=".7"/><path d="M100 80 L0 10 L10 -5Z" opacity=".5"/>
+            <path d="M100 80 L190 -5 L200 10Z" opacity=".5"/>
+          </g>
+          <ellipse cx="100" cy="82" rx="68" ry="11" fill="#3b2415"/>
+          <g stroke="#7a5310" stroke-width="1">
+            <circle cx="62" cy="80" r="7" fill="#e3a72f"/><circle cx="76" cy="76" r="7" fill="#f0bd4a"/>
+            <circle cx="124" cy="77" r="7" fill="#f0bd4a"/><circle cx="138" cy="80" r="7" fill="#e3a72f"/>
+            <circle cx="150" cy="78" r="6" fill="#e3a72f"/><circle cx="52" cy="79" r="6" fill="#f0bd4a"/>
+          </g>
+          <g transform="translate(100 66) rotate(-8)">
+            <rect x="-22" y="-10" width="44" height="22" rx="4" fill="#f4e7c9" stroke="#3a2817" stroke-width="1.4"/>
+            <circle cx="0" cy="1" r="5.5" fill="#b8322a" stroke="#3a2817" stroke-width="1"/>
+          </g>
+          <rect x="30" y="80" width="140" height="70" rx="6" fill="#8a5a2b" stroke="#2a1a0e" stroke-width="2.5"/>
+          <path d="M32 103 L168 103 M32 126 L168 126" stroke="#6b4320" stroke-width="1.6"/>
+          <rect x="48" y="80" width="12" height="70" fill="#e3a72f" stroke="#2a1a0e" stroke-width="1.5"/>
+          <rect x="140" y="80" width="12" height="70" fill="#e3a72f" stroke="#2a1a0e" stroke-width="1.5"/>
+          <rect x="89" y="84" width="22" height="26" rx="3" fill="#e3a72f" stroke="#2a1a0e" stroke-width="1.5"/>
+          <circle cx="100" cy="94" r="3.4" fill="#2a1a0e"/><path d="M100 96 L100 103" stroke="#2a1a0e" stroke-width="2.6"/>
+          <g id="lid">
+            <path d="M30 82 L30 58 C30 26 170 26 170 58 L170 82 Z" fill="#9b6532" stroke="#2a1a0e" stroke-width="2.5"/>
+            <g clip-path="url(#lidClip)">
+              <rect x="48" y="20" width="12" height="64" fill="#e3a72f" stroke="#2a1a0e" stroke-width="1.5"/>
+              <rect x="140" y="20" width="12" height="64" fill="#e3a72f" stroke="#2a1a0e" stroke-width="1.5"/>
+              <path d="M30 60 C60 52 140 52 170 60" fill="none" stroke="#6b4320" stroke-width="1.6"/>
+            </g>
+            <path d="M30 82 L30 58 C30 26 170 26 170 58 L170 82 Z" fill="none" stroke="#2a1a0e" stroke-width="2.5"/>
+            <rect x="92" y="70" width="16" height="15" rx="2" fill="#e3a72f" stroke="#2a1a0e" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </div>
+      <canvas id="sand"></canvas>
+    </div>
+  </div>
+  <div id="digHint">Escarbando… 0%</div>
+  <div class="reward" id="rw3">
+    <p class="rtext"></p>
+    <div class="fragCard"><span class="fl">Fragmento 4 de 4</span><span class="ftxt"></span></div>
+    <div class="center"><button class="btn red" data-next="3">Abrir la carta</button></div>
+  </div>
+</section>
+
+<!-- ================= 4. FINAL ================= -->
+<section class="screen" id="final">
+  <h2>¡Encontraste el tesoro!</h2>
+  <div class="poster">
+    <div class="pTop pirate">SE BUSCA</div>
+    <div class="pFrame" id="pFrame"></div>
+    <div class="pName pirate" id="pName"></div>
+    <div class="pCrime">Por robarse un corazón en Cali</div>
+    <div class="pReward"><span>Recompensa</span><b>Incalculable</b></div>
+  </div>
+  <div class="secret">
+    <h3>El mensaje secreto, completo</h3>
+    <div class="secretTxt" id="secretTxt"></div>
+  </div>
+  <div class="letter" id="letter"></div>
+  <div class="sign" id="sign"></div>
+  <div id="endRow"><button class="linkbtn" id="restartBtn">Volver a navegar</button></div>
+</section>
+
+<div class="toast" id="toast"><strong id="toastName"></strong><span id="toastText"></span></div>
+
+<script>
+/* =====================================================
+   PERSONALIZA AQUÍ
+   ===================================================== */
+const CONFIG = {
+  para: "Heilen Maina",   // nombre completo (sale en el inicio y en el cartel)
+  corto: "Heilen",        // como la llamas tú
+  de: "",                 // tu nombre para la firma (opcional)
+  foto: "",               // opcional: sube una foto de ella al repo (ej. "heilen.jpg") y escribe aquí su nombre
+  fragmentos: [
+    "No importa cuántos kilómetros haya entre Cali y Florida,",
+    "mi brújula sigue apuntando al mismo lugar desde que éramos niños.",
+    "Y si para llegar hay que cruzar mil tormentas,",
+    "las cruzo, porque hay tesoros que valen la pena."
+  ],
+  carta: [
+    "Hice esta aventura solo para ti. No puedo mandarte cofres de oro hasta Florida, pero sí puedo mandarte esto: un ratito para hacerte sonreír.",
+    "Gracias por seguir en mi mapa después de tantos años."
+  ]
+};
+
+/* =====================================================
+   UTILIDADES
+   ===================================================== */
+const $ = s => document.querySelector(s);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const vib = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} };
+const INK = '#3a2817';
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $('#' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+let toastTimer;
+function toast(name, text) {
+  $('#toastName').textContent = name;
+  $('#toastText').textContent = text;
+  $('#toast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $('#toast').classList.remove('show'), 2600);
+}
+
+function burst(container, x, y, n = 20) {
+  if (reduced) return;
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement('span');
+    c.className = 'coinP';
+    c.style.left = x + 'px'; c.style.top = y + 'px';
+    container.appendChild(c);
+    const dx = (Math.random() - .5) * 320, dy = -(90 + Math.random() * 170);
+    const a = c.animate([
+      {transform: 'translate(0,0) scale(.6)', opacity: 1},
+      {transform: `translate(${dx * .55}px,${dy}px) scale(1) rotate(${Math.random() * 360}deg)`, opacity: 1, offset: .45},
+      {transform: `translate(${dx}px,${dy + 300}px) scale(.9) rotate(${Math.random() * 720}deg)`, opacity: 0}
+    ], {duration: 1400 + Math.random() * 600, easing: 'cubic-bezier(.2,.6,.4,1)', delay: Math.random() * 200});
+    a.onfinish = () => c.remove();
+  }
+}
+
+/* =====================================================
+   SONIDOS (sintetizados, sin archivos)
+   ===================================================== */
+const SFX = (() => {
+  let ctx = null, on = true;
+  const ensure = () => {
+    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ctx = null; } }
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  };
+  const tone = (f, d, type = 'sine', vol = .15, when = 0, f2 = null) => {
+    const c = ensure(); if (!c || !on) return;
+    const t = c.currentTime + when, o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + d + .05);
+  };
+  const noise = (d, vol = .3, freq = 800, when = 0) => {
+    const c = ensure(); if (!c || !on) return;
+    const t = c.currentTime + when, len = Math.floor(c.sampleRate * d), b = c.createBuffer(1, len, c.sampleRate), data = b.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
+    const s = c.createBufferSource(); s.buffer = b;
+    const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.value = freq;
+    const g = c.createGain(); g.gain.value = vol;
+    s.connect(fl).connect(g).connect(c.destination); s.start(t);
+  };
+  return {
+    unlock: ensure,
+    toggle() { on = !on; return on; },
+    tap() { tone(520, .07, 'triangle', .09); },
+    pop() { tone(900, .14, 'triangle', .28, 0, 160); noise(.09, .3, 3500); },
+    coin() { tone(988, .08, 'square', .05); tone(1319, .2, 'square', .05, .07); },
+    hit() { tone(130, .28, 'sawtooth', .1, 0, 45); noise(.22, .35, 500); },
+    thunder() { noise(1.8, .55, 220); },
+    click() { tone(1500, .04, 'square', .06); tone(760, .07, 'square', .05, .05); },
+    whoosh() { noise(.6, .18, 1400); },
+    win() { [523, 659, 784, 1047].forEach((f, i) => tone(f, .28, 'triangle', .12, i * .11)); },
+    chest() { noise(.35, .18, 1200); [392, 523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .32, 'triangle', .1, .15 + i * .085)); }
+  };
+})();
+$('#mute').addEventListener('click', () => { const on = SFX.toggle(); $('#mute').textContent = on ? '🔊' : '🔇'; });
+document.addEventListener('pointerdown', () => SFX.unlock(), {once: true});
+
+/* =====================================================
+   ESTADO
+   ===================================================== */
+let progress = 0;      // islas completadas (0..4)
+let shipAt = 0;        // nodo donde está el barco (0 = Cali)
+let sailing = false;
+let newFrag = -1;
+const FLAG = {color: '#1c1a1a', acc: 'tricornio', cross: 'huesos'};
+
+/* =====================================================
+   1. BOTELLA
+   ===================================================== */
+(function buildBeach() {
+  let w = '';
+  for (let row = 0; row < 5; row++) {
+    const y = 92 + row * 17, off = (row % 2) * 30;
+    for (let x = -60 + off; x < 440; x += 60) w += `<path d="M${x} ${y} q7 -6 14 0 t14 0"/>`;
+  }
+  $('#waveG').innerHTML = w;
+  let d = '';
+  for (let i = 0; i < 40; i++) {
+    const x = (i * 97) % 360, y = 172 + ((i * 53) % 74);
+    d += `<circle cx="${x}" cy="${y}" r="${(i % 3) * .4 + .7}" fill="#a98450" opacity=".6"/>`;
+  }
+  $('#sandDots').innerHTML = d;
+})();
+
+$('#capName').textContent = CONFIG.para;
+$('#noteHi').textContent = `Capitana ${CONFIG.corto}:`;
+
+let taps = 0, uncorked = false;
+$('#bottleHit').addEventListener('pointerdown', e => {
+  e.preventDefault();
+  if (uncorked) return;
+  taps++;
+  document.querySelectorAll('.pip').forEach((p, i) => p.classList.toggle('on', i < taps));
+  if (!reduced) $('#bottleWig').animate(
+    [{transform: 'rotate(0)'}, {transform: 'rotate(-8deg)'}, {transform: 'rotate(7deg)'}, {transform: 'rotate(0)'}],
+    {duration: 380});
+  vib(20);
+  if (taps < 3) { SFX.tap(); $('#cork').style.transform = `translateY(${-taps * 5}px)`; }
+  else uncork();
+});
+
+async function uncork() {
+  uncorked = true;
+  SFX.pop(); vib(60);
+  const ck = $('#cork');
+  if (!reduced) ck.animate(
+    [{transform: 'translateY(-10px)'}, {transform: 'translateY(-130px) rotate(320deg)', opacity: 0}],
+    {duration: 850, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards'});
+  else ck.style.opacity = 0;
+  await wait(350);
+  const pp = $('#paperIn');
+  if (!reduced) pp.animate([{transform: 'translateY(0)'}, {transform: 'translateY(-95px)', opacity: 0}],
+    {duration: 900, easing: 'ease-in', fill: 'forwards'});
+  else pp.style.opacity = 0;
+  await wait(750);
+  $('#tapRow').style.display = 'none';
+  $('#note').classList.add('show');
+  setTimeout(() => $('#note').scrollIntoView({behavior: 'smooth', block: 'center'}), 200);
+}
+
+$('#sailBtn').addEventListener('click', () => enterMap());
+
+/* =====================================================
+   2. MAPA
+   ===================================================== */
+const NODES = [{x: 58, y: 425}, {x: 92, y: 348}, {x: 262, y: 298}, {x: 120, y: 200}, {x: 268, y: 92}];
+const SEGS = [
+  'M58 425 C38 395 70 372 92 348',
+  'M92 348 C150 328 210 338 262 298',
+  'M262 298 C300 250 170 250 120 200',
+  'M120 200 C70 158 200 140 268 92'
+];
+const ISLANDS = [
+  {name: 'Isla de la Brújula', screen: 'c1'},
+  {name: 'Isla de la Bandera', screen: 'c2'},
+  {name: 'Mar de las Tormentas', screen: 'c3'},
+  {name: 'Isla del Tesoro', screen: 'c4'}
+];
+
+function blob(cx, cy, rx, ry, seed) {
+  const n = 10, pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = i / n * Math.PI * 2, k = 1 + .14 * Math.sin(seed * 3.1 + i * 2.3);
+    pts.push([cx + Math.cos(a) * rx * k, cy + Math.sin(a) * ry * k]);
+  }
+  let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += ` C${c1[0].toFixed(1)} ${c1[1].toFixed(1)} ${c2[0].toFixed(1)} ${c2[1].toFixed(1)} ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+  }
+  return d + 'Z';
+}
+function island(cx, cy, rx, ry, seed) {
+  return `<ellipse cx="${cx}" cy="${cy + 2}" rx="${rx + 12}" ry="${ry + 8}" fill="#cfe3dc" opacity=".8"/>
+    <path d="${blob(cx, cy, rx, ry, seed)}" fill="#e7c98b" stroke="${INK}" stroke-width="1.5"/>
+    <path d="${blob(cx, cy - 2, rx * .55, ry * .45, seed + 1)}" fill="#cdb071" opacity=".5"/>`;
+}
+function palm(x, y, s = 1) {
+  const tx = x + 12 * s, ty = y - 30 * s;
+  const L = (dx, dy, qx, qy) => `<path d="M${tx} ${ty} Q${tx + qx * s} ${ty + qy * s} ${tx + dx * s} ${ty + dy * s}"/>`;
+  return `<path d="M${x} ${y} C${x + 2 * s} ${y - 12 * s} ${x + 6 * s} ${y - 22 * s} ${tx} ${ty}" fill="none" stroke="#7a4f27" stroke-width="${3.2 * s}" stroke-linecap="round"/>
+    <g fill="none" stroke="#3f6b3a" stroke-width="${3 * s}" stroke-linecap="round">
+      ${L(-20, 4, -10, -9)}${L(22, 0, 10, -11)}${L(-12, -14, -3, -13)}${L(15, -13, 7, -15)}${L(10, 11, 7, 2)}
+    </g>
+    <circle cx="${tx - 2}" cy="${ty + 3}" r="${2.2 * s}" fill="#6b4320"/><circle cx="${tx + 3}" cy="${ty + 3}" r="${2.2 * s}" fill="#6b4320"/>`;
+}
+function rose(cx, cy, r) {
+  let s = `<circle cx="${cx}" cy="${cy}" r="${r * .72}" fill="none" stroke="${INK}" stroke-width="1"/>`;
+  const pt = (ang, len, w) => {
+    const a = ang * Math.PI / 180, ax = Math.sin(a), ay = -Math.cos(a), px = Math.cos(a), py = Math.sin(a);
+    const tip = [cx + ax * len, cy + ay * len], l = [cx + px * w, cy + py * w], rr = [cx - px * w, cy - py * w];
+    return `<path d="M${cx} ${cy} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${l[0].toFixed(1)} ${l[1].toFixed(1)}Z" fill="${INK}"/>
+            <path d="M${cx} ${cy} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${rr[0].toFixed(1)} ${rr[1].toFixed(1)}Z" fill="#f4e7c9" stroke="${INK}" stroke-width="1"/>`;
+  };
+  [45, 135, 225, 315].forEach(a => s += pt(a, r * .6, r * .13));
+  [0, 90, 180, 270].forEach(a => s += pt(a, r, r * .17));
+  s += `<text x="${cx}" y="${cy - r - 5}" text-anchor="middle" font-size="15" class="pirateTxt">N</text>`;
+  return s;
+}
+const wave = (x, y) => `<path d="M${x} ${y} q4 -4 8 0 t8 0" fill="none" stroke="#7fa9b5" stroke-width="1.3" stroke-linecap="round"/>`;
+const check = (x, y) => `<g class="check"><circle cx="${x}" cy="${y}" r="9" fill="#b8322a" stroke="${INK}" stroke-width="1.2"/>
+  <path d="M${x - 4} ${y} L${x - 1} ${y + 3.5} L${x + 4.5} ${y - 3.5}" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+
+function buildMap() {
+  const N = NODES;
+  let s = `<path d="M8 14 L60 8 L120 14 L190 6 L260 12 L352 8 L346 80 L354 160 L348 260 L354 360 L346 462 L260 456 L180 464 L100 456 L12 462 L16 380 L6 300 L14 200 L6 100 Z"
+              fill="#efdcae" stroke="#8a6a3e" stroke-width="1.6"/>
+           <rect x="22" y="22" width="316" height="426" rx="6" fill="none" stroke="#8a6a3e" stroke-width="1" stroke-dasharray="5 5" opacity=".6"/>`;
+  [[40, 60], [150, 40], [190, 130], [60, 140], [300, 180], [200, 230], [320, 250], [40, 270], [170, 300], [150, 390], [260, 360], [320, 340], [110, 440], [230, 445], [40, 210]]
+    .forEach(([x, y]) => s += wave(x, y));
+  s += rose(306, 412, 26);
+  // ballena
+  s += `<g stroke="${INK}" stroke-width="1.3" stroke-linejoin="round">
+          <path d="M206 424 C200 414 190 409 182 411 C190 415 197 419 201 425 C202 431 201 435 202 440 L210 440 C211 435 210 431 211 425 C215 419 222 415 230 411 C222 409 212 414 206 424Z" fill="#9cc3cd"/>
+        </g>${wave(186, 446)}${wave(206, 446)}`;
+  // Cali
+  s += `<g><path d="M40 432 L76 432 M44 432 L44 442 M52 432 L52 442 M60 432 L60 442 M68 432 L68 442" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
+        <text x="30" y="456" font-size="16" class="pirateTxt">Puerto de Cali</text></g>`;
+  // tramos
+  s += `<g id="segs">${SEGS.map((d, i) => `<path class="seg" data-k="${i}" d="${d}"/>`).join('')}</g>`;
+  // isla 1
+  s += `<g class="node" data-i="0"><g class="art">${island(N[1].x, N[1].y, 34, 15, 1)}${palm(N[1].x - 8, N[1].y - 2, .9)}</g>
+        <text x="${N[1].x}" y="${N[1].y + 34}" text-anchor="middle" font-size="14">Isla de la Brújula</text>
+        <circle class="ring" cx="${N[1].x}" cy="${N[1].y - 6}" r="30"/>${check(N[1].x + 30, N[1].y - 22)}
+        <circle class="hit" cx="${N[1].x}" cy="${N[1].y - 6}" r="40"/></g>`;
+  // isla 2
+  s += `<g class="node" data-i="1"><g class="art">${island(N[2].x, N[2].y, 34, 14, 2)}
+          <line x1="${N[2].x + 4}" y1="${N[2].y}" x2="${N[2].x + 4}" y2="${N[2].y - 34}" stroke="${INK}" stroke-width="2"/>
+          <path id="isleFlag" d="M${N[2].x + 4} ${N[2].y - 34} L${N[2].x + 28} ${N[2].y - 29} L${N[2].x + 4} ${N[2].y - 22}Z" fill="#f4e7c9" stroke="${INK}" stroke-width="1.2"/></g>
+        <text x="${N[2].x}" y="${N[2].y + 32}" text-anchor="middle" font-size="14">Isla de la Bandera</text>
+        <circle class="ring" cx="${N[2].x}" cy="${N[2].y - 8}" r="30"/>${check(N[2].x + 32, N[2].y - 24)}
+        <circle class="hit" cx="${N[2].x}" cy="${N[2].y - 8}" r="40"/></g>`;
+  // mar de tormentas
+  const x3 = N[3].x, y3 = N[3].y;
+  s += `<g class="node" data-i="2"><g class="art">
+          <g fill="none" stroke="#3d6f80" stroke-width="1.6" stroke-linecap="round">
+            <path d="M${x3 - 34} ${y3 + 16} q6 -7 12 0 t12 0 t12 0 t12 0 t12 0 t12 0"/>
+            <path d="M${x3 - 26} ${y3 + 26} q6 -7 12 0 t12 0 t12 0 t12 0"/>
+          </g>
+          <path d="M${x3 - 28} ${y3 - 10} C${x3 - 36} ${y3 - 10} ${x3 - 38} ${y3 - 22} ${x3 - 28} ${y3 - 24} C${x3 - 28} ${y3 - 34} ${x3 - 14} ${y3 - 36} ${x3 - 10} ${y3 - 30} C${x3 - 6} ${y3 - 40} ${x3 + 12} ${y3 - 40} ${x3 + 14} ${y3 - 28} C${x3 + 26} ${y3 - 30} ${x3 + 30} ${y3 - 14} ${x3 + 20} ${y3 - 10} Z" fill="#c9d1d8" stroke="${INK}" stroke-width="1.5"/>
+          <path d="M${x3 - 2} ${y3 - 10} L${x3 - 10} ${y3 + 4} L${x3 - 2} ${y3 + 4} L${x3 - 8} ${y3 + 18} L${x3 + 6} ${y3} L${x3 - 2} ${y3} L${x3 + 4} ${y3 - 10}Z" fill="#e3a72f" stroke="${INK}" stroke-width="1.2"/>
+          <path d="M${x3 - 22} ${y3 - 6} l-3 7 M${x3 + 14} ${y3 - 6} l-3 7 M${x3 + 20} ${y3 - 4} l-3 7" stroke="#5f93a3" stroke-width="1.4" stroke-linecap="round"/>
+        </g>
+        <text x="${x3}" y="${y3 + 46}" text-anchor="middle" font-size="14">Mar de las Tormentas</text>
+        <circle class="ring" cx="${x3}" cy="${y3}" r="32"/>${check(x3 + 34, y3 - 26)}
+        <circle class="hit" cx="${x3}" cy="${y3}" r="42"/></g>`;
+  // isla del tesoro
+  const x4 = N[4].x, y4 = N[4].y;
+  s += `<text x="${x4 + 4}" y="${y4 - 46}" text-anchor="middle" font-size="22" class="pirateTxt">Florida</text>
+        <g class="node" data-i="3"><g class="art">${island(x4, y4, 42, 18, 4)}${palm(x4 + 14, y4 - 4, .75)}
+          <path d="M${x4 - 18} ${y4 - 10} L${x4 - 2} ${y4 + 6} M${x4 - 2} ${y4 - 10} L${x4 - 18} ${y4 + 6}" stroke="#b8322a" stroke-width="4" stroke-linecap="round"/></g>
+        <text x="${x4}" y="${y4 + 38}" text-anchor="middle" font-size="14">Isla del Tesoro</text>
+        <circle class="ring" cx="${x4}" cy="${y4 - 4}" r="34"/>${check(x4 + 38, y4 - 22)}
+        <circle class="hit" cx="${x4}" cy="${y4 - 4}" r="44"/></g>`;
+  // barco
+  s += `<g id="ship" transform="translate(${N[0].x} ${N[0].y})" style="pointer-events:none"><g id="shipInner">
+          <path d="M-14 -2 L14 -2 L9 7 L-9 7Z" fill="#8a5a2b" stroke="${INK}" stroke-width="1.5"/>
+          <line x1="0" y1="-2" x2="0" y2="-26" stroke="${INK}" stroke-width="1.8"/>
+          <path d="M1.5 -23 C12 -17 12 -8 1.5 -4Z" fill="#f4e7c9" stroke="${INK}" stroke-width="1.2"/>
+          <path id="shipFlag" d="M0 -26 L-10 -23 L0 -20Z" fill="#1c1a1a" stroke="${INK}" stroke-width=".8"/>
+          <path d="M-18 10 q4 -3 8 0 M10 10 q4 -3 8 0" fill="none" stroke="#5f93a3" stroke-width="1.3" stroke-linecap="round"/>
+        </g></g>`;
+  $('#mapSvg').innerHTML = s;
+  document.querySelectorAll('#mapSvg .node').forEach(g => g.addEventListener('click', () => tapNode(+g.dataset.i)));
+}
+
+function buildFrags() {
+  $('#frags').innerHTML = '';
+  CONFIG.fragmentos.forEach((f, i) => {
+    const d = document.createElement('div');
+    d.className = 'frag'; d.dataset.i = i;
+    d.innerHTML = `<span class="fn">${i + 1}</span><span class="ft">· · · aún escondido · · ·</span>`;
+    $('#frags').appendChild(d);
+  });
+}
+
+function refreshMap() {
+  document.querySelectorAll('#mapSvg .node').forEach(g => {
+    const i = +g.dataset.i;
+    g.classList.remove('done', 'current', 'locked');
+    g.classList.add(i < progress ? 'done' : (i === progress && shipAt === i + 1 && !sailing) ? 'current' : 'locked');
+  });
+  document.querySelectorAll('#segs .seg').forEach(p => p.classList.toggle('on', +p.dataset.k < shipAt));
+  const sf = $('#shipFlag'); if (sf) sf.setAttribute('fill', FLAG.color);
+  const ifl = $('#isleFlag'); if (ifl) ifl.setAttribute('fill', progress >= 2 ? FLAG.color : '#f4e7c9');
+  document.querySelectorAll('#frags .frag').forEach(d => {
+    const i = +d.dataset.i;
+    if (i < progress && !d.classList.contains('got')) {
+      d.classList.add('got');
+      d.querySelector('.ft').textContent = CONFIG.fragmentos[i];
+    }
+    d.classList.toggle('new', i === newFrag);
+  });
+  $('#mapHint').textContent = sailing ? 'Navegando…' : 'Toca la isla que brilla';
+}
+
+function tapNode(i) {
+  if (sailing) return;
+  if (i < progress) return toast(ISLANDS[i].name, 'Ya conquistaste esta isla.');
+  if (i > progress) return toast('Todavía no', 'Primero conquista la isla anterior.');
+  openIsland(i);
+}
+
+function moveShip(k) {
+  return new Promise(res => {
+    const path = document.querySelector(`#segs .seg[data-k="${k}"]`);
+    const L = path.getTotalLength(), ship = $('#ship'), inner = $('#shipInner');
+    const a = NODES[k], b = NODES[k + 1];
+    inner.setAttribute('transform', b.x < a.x ? 'scale(-1 1)' : '');
+    path.classList.add('on');
+    SFX.whoosh();
+    const dur = reduced ? 10 : 1800;
+    let start = null;
+    const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    const frame = ts => {
+      if (start === null) start = ts;
+      const r = Math.min(1, (ts - start) / dur), p = path.getPointAtLength(ease(r) * L);
+      const bob = Math.sin(ts / 120) * 1.5;
+      ship.setAttribute('transform', `translate(${p.x.toFixed(1)} ${(p.y + bob).toFixed(1)})`);
+      if (r < 1) requestAnimationFrame(frame); else res();
+    };
+    requestAnimationFrame(frame);
+  });
+}
+
+async function sail() {
+  const target = Math.min(progress + 1, 4);
+  if (shipAt >= target) { refreshMap(); return; }
+  sailing = true; refreshMap();
+  await wait(500);
+  while (shipAt < target) { await moveShip(shipAt); shipAt++; }
+  const n = NODES[shipAt];
+  $('#ship').setAttribute('transform', `translate(${n.x} ${n.y})`);
+  sailing = false; refreshMap();
+}
+
+function enterMap() {
+  showScreen('map');
+  refreshMap();
+  if (newFrag >= 0) {
+    const el = document.querySelector(`#frags .frag[data-i="${newFrag}"]`);
+    setTimeout(() => { el && el.scrollIntoView({behavior: 'smooth', block: 'center'}); }, 300);
+    setTimeout(() => { window.scrollTo({top: 0, behavior: 'smooth'}); }, 2200);
+    setTimeout(() => { newFrag = -1; sail(); }, 2700);
+  } else sail();
+}
+
+function openIsland(i) {
+  showScreen(ISLANDS[i].screen);
+  requestAnimationFrame(() => [initCompass, initFlag, initGame, initDig][i]());
+}
+
+document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => { stopGame(); enterMap(); }));
+document.querySelectorAll('[data-next]').forEach(b => b.addEventListener('click', () => {
+  const i = +b.dataset.next;
+  if (i < 3) enterMap(); else openFinal();
+}));
+
+const RTEXT = [
+  () => 'Desde Cali, Florida queda casi justo al norte. Así que cada vez que una brújula apunta al norte… en realidad te está señalando a ti.',
+  () => `Desde hoy, quien vea esta bandera en el horizonte sabrá que se acerca la capitana ${CONFIG.corto}.`,
+  () => `¡Cruzaste la tormenta y rescataste ${G.coins} ${G.coins === 1 ? 'moneda' : 'monedas'}! Una buena capitana no le tiene miedo a unos cuantos rayos.`,
+  () => 'Dentro del cofre hay oro… y una carta sellada con tu nombre.'
+];
+const RHEAD = ['¡Eso es! ', '¡Qué bandera tan bonita! ', '', '¡Lo encontraste! '];
+
+function completeIsland(i) {
+  if (progress < i + 1) { progress = i + 1; newFrag = i; }
+  const rw = $('#rw' + i);
+  rw.querySelector('.rtext').textContent = RHEAD[i] + RTEXT[i]();
+  rw.querySelector('.ftxt').textContent = '“' + CONFIG.fragmentos[i] + '”';
+  rw.classList.add('show');
+  SFX.win();
+  setTimeout(() => rw.scrollIntoView({behavior: 'smooth', block: 'center'}), 200);
+}
+
+/* =====================================================
+   3a. BRÚJULA
+   ===================================================== */
+const C = {a: 140, v: 0, drag: false, done: false, raf: 0};
+const norm = a => ((a % 360) + 540) % 360 - 180;
+
+(function buildCompass() {
+  let s = `<circle r="124" fill="#e9d3a0" stroke="${INK}" stroke-width="2.2"/>
+           <circle r="113" fill="none" stroke="${INK}" stroke-width="1"/>
+           <circle r="98" fill="#f4e7c9" stroke="${INK}" stroke-width="1.2"/>`;
+  for (let d = 0; d < 360; d += 5) {
+    const len = d % 45 === 0 ? 12 : d % 15 === 0 ? 8 : 4, a = d * Math.PI / 180;
+    s += `<line x1="${(Math.sin(a) * 113).toFixed(1)}" y1="${(-Math.cos(a) * 113).toFixed(1)}" x2="${(Math.sin(a) * (113 - len)).toFixed(1)}" y2="${(-Math.cos(a) * (113 - len)).toFixed(1)}" stroke="${INK}" stroke-width="${d % 45 ? 1 : 1.8}"/>`;
+  }
+  s += `<circle id="nGlow" cx="0" cy="-80" r="19" fill="#e3a72f" opacity=".25"/>`;
+  [[0, 'N', '#b8322a'], [90, 'E', INK], [180, 'S', INK], [270, 'O', INK]].forEach(([d, t, c]) => {
+    const a = d * Math.PI / 180;
+    s += `<text x="${(Math.sin(a) * 80).toFixed(1)}" y="${(-Math.cos(a) * 80).toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="26" fill="${c}">${t}</text>`;
+  });
+  s += `<text x="0" y="-57" text-anchor="middle" font-size="13" fill="#b8322a" style="font-family:'IM Fell English',Georgia,serif;font-style:italic">Florida</text>
+        <text x="0" y="57" text-anchor="middle" font-size="13" fill="${INK}" style="font-family:'IM Fell English',Georgia,serif;font-style:italic">Cali</text>`;
+  [45, 135, 225, 315].forEach(d => {
+    const a = d * Math.PI / 180;
+    s += `<line x1="0" y1="0" x2="${(Math.sin(a) * 60).toFixed(1)}" y2="${(-Math.cos(a) * 60).toFixed(1)}" stroke="#c9b48a" stroke-width="1"/>`;
+  });
+  s += `<g id="needle">
+          <path d="M0 -92 L10 0 L-10 0Z" fill="#b8322a" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/>
+          <path d="M0 92 L10 0 L-10 0Z" fill="${INK}" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/>
+          <circle r="9" fill="#e3a72f" stroke="${INK}" stroke-width="1.4"/><circle r="3" fill="${INK}"/>
+        </g>`;
+  $('#compass').innerHTML = s;
+})();
+
+const setNeedle = a => $('#needle').setAttribute('transform', `rotate(${a.toFixed(2)})`);
+
+function initCompass() {
+  if (C.done) return;
+  cancelAnimationFrame(C.raf);
+  C.a = 140; C.v = 15;
+  const tick = ts => {
+    if (C.done) return;
+    if (!C.drag) {
+      C.v *= .985;
+      C.a += C.v + Math.sin(ts / 650) * .9 + Math.sin(ts / 1700) * 1.4;
+      $('#nGlow').style.opacity = .25;
+    }
+    setNeedle(C.a);
+    C.raf = requestAnimationFrame(tick);
+  };
+  C.raf = requestAnimationFrame(tick);
+}
+
+const csvg = $('#compass');
+function moveNeedle(e) {
+  const r = csvg.getBoundingClientRect();
+  const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+  C.a = Math.atan2(dx, -dy) * 180 / Math.PI;
+  const n = Math.abs(norm(C.a));
+  $('#nGlow').style.opacity = n < 14 ? 1 : .25;
+  if (n < 6) lockCompass();
+}
+csvg.addEventListener('pointerdown', e => {
+  if (C.done) return;
+  e.preventDefault();
+  C.drag = true; C.v = 0;
+  try { csvg.setPointerCapture(e.pointerId); } catch (_) {}
+  moveNeedle(e);
+});
+csvg.addEventListener('pointermove', e => { if (C.drag && !C.done) moveNeedle(e); });
+const endNeedle = () => {
+  if (!C.drag || C.done) return;
+  C.drag = false;
+  if (Math.abs(norm(C.a)) <= 14) lockCompass();
+  else C.v = (Math.random() < .5 ? -1 : 1) * 4;
+};
+csvg.addEventListener('pointerup', endNeedle);
+csvg.addEventListener('pointercancel', endNeedle);
+
+function lockCompass() {
+  if (C.done) return;
+  C.done = true; C.drag = false;
+  cancelAnimationFrame(C.raf);
+  SFX.click(); vib(50);
+  const from = norm(C.a), t0 = performance.now();
+  const anim = ts => {
+    const r = Math.min(1, (ts - t0) / 350);
+    setNeedle(from * (1 - r));
+    if (r < 1) requestAnimationFrame(anim);
+  };
+  requestAnimationFrame(anim);
+  $('#nGlow').style.opacity = 1;
+  csvg.classList.add('locked');
+  setTimeout(() => completeIsland(0), 650);
+}
+
+/* =====================================================
+   3b. BANDERA
+   ===================================================== */
+function emblem(f) {
+  const W = '#f6efdc', D = f.color, R = '#d6455a';
+  let back = '';
+  if (f.cross === 'huesos') {
+    const bone = `<line x1="-34" y1="0" x2="34" y2="0" stroke="${W}" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="-36" cy="-4" r="5" fill="${W}"/><circle cx="-36" cy="4" r="5" fill="${W}"/>
+      <circle cx="36" cy="-4" r="5" fill="${W}"/><circle cx="36" cy="4" r="5" fill="${W}"/>`;
+    back = `<g transform="translate(0 10) rotate(32)">${bone}</g><g transform="translate(0 10) rotate(-32)">${bone}</g>`;
+  } else if (f.cross === 'espadas') {
+    const sw = `<path d="M-26 -2.4 L32 -2.4 L42 0 L32 2.4 L-26 2.4Z" fill="#dfe4e8" stroke="${W}" stroke-width=".6"/>
+      <line x1="-27" y1="-9" x2="-27" y2="9" stroke="#e3a72f" stroke-width="4" stroke-linecap="round"/>
+      <line x1="-40" y1="0" x2="-29" y2="0" stroke="#9b6532" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="-42" cy="0" r="3.2" fill="#e3a72f"/>`;
+    back = `<g transform="translate(0 12) rotate(-38)">${sw}</g><g transform="translate(0 12) rotate(218)">${sw}</g>`;
+  } else {
+    const rs = `<line x1="-36" y1="0" x2="28" y2="0" stroke="#5f9b5a" stroke-width="3" stroke-linecap="round"/>
+      <path d="M-6 0 C-10 -8 -2 -10 2 -3 Z" fill="#5f9b5a"/><path d="M-18 0 C-14 8 -6 8 -6 1 Z" fill="#5f9b5a"/>
+      <circle cx="34" cy="0" r="8" fill="${R}" stroke="${W}" stroke-width=".8"/>
+      <path d="M34 -4 C38 -3 38 3 34 3 C31 3 31 -1 34 -1" fill="none" stroke="#8e2033" stroke-width="1.2"/>`;
+    back = `<g transform="translate(0 12) rotate(-36)">${rs}</g><g transform="translate(0 12) rotate(216)">${rs}</g>`;
+  }
+  const heart = (x, y) => `<path transform="translate(${x} ${y}) scale(1.6)" d="M0 3 C-6 -2 -4 -8 0 -4 C4 -8 6 -2 0 3Z" fill="${R}"/>`;
+  const eyes = f.acc === 'corazones'
+    ? heart(-9, -3) + heart(9, -3)
+    : `<ellipse cx="-9" cy="-5" rx="6" ry="7" fill="${D}"/><ellipse cx="9" cy="-5" rx="6" ry="7" fill="${D}"/>`;
+  const skull = `<path d="M-22 -4 C-24 -30 24 -30 22 -4 C22 6 16 10 14 14 L14 22 L-14 22 L-14 14 C-16 10 -22 6 -22 -4Z" fill="${W}"/>
+    ${eyes}
+    <path d="M0 4 L-3.5 10 L3.5 10Z" fill="${D}"/>
+    <path d="M-7 15 L-7 22 M-2.4 15 L-2.4 22 M2.4 15 L2.4 22 M7 15 L7 22" stroke="${D}" stroke-width="1.6"/>`;
+  let top = '';
+  if (f.acc === 'tricornio') {
+    top = `<path d="M-33 -19 C-24 -24 -15 -45 0 -45 C15 -45 24 -24 33 -19 C14 -26 -14 -26 -33 -19Z" fill="#2a2420" stroke="#e3a72f" stroke-width="2"/>
+           <path d="M-20 -25 C-10 -28 10 -28 20 -25" fill="none" stroke="#e3a72f" stroke-width="1.4"/>
+           <circle cx="0" cy="-34" r="3" fill="#e3a72f"/>`;
+  } else if (f.acc === 'lazo') {
+    top = `<g transform="translate(15 -22) rotate(18)">
+             <path d="M0 0 C-14 -11 -16 9 0 0Z" fill="#e0607e" stroke="${W}" stroke-width=".8"/>
+             <path d="M0 0 C14 -11 16 9 0 0Z" fill="#e0607e" stroke="${W}" stroke-width=".8"/>
+             <path d="M-2 1 L-6 11 M2 1 L6 11" stroke="#e0607e" stroke-width="2.4" stroke-linecap="round"/>
+             <circle r="3.4" fill="#c44462"/></g>`;
+  } else if (f.acc === 'flores') {
+    const cols = ['#f2b6bc', '#f6d36b', '#c9b6ec', '#b9d3f2', '#f2b6bc'];
+    [[-20, -17], [-10, -25], [0, -28], [10, -25], [20, -17]].forEach(([x, y], k) => {
+      top += `<path d="M${x - 5} ${y + 2} C${x - 9} ${y + 6} ${x - 2} ${y + 7} ${x} ${y + 3}Z" fill="#5f9b5a"/>`;
+      for (let p = 0; p < 5; p++) {
+        const a = p * 72 * Math.PI / 180;
+        top += `<circle cx="${(x + Math.cos(a) * 3.4).toFixed(1)}" cy="${(y + Math.sin(a) * 3.4).toFixed(1)}" r="3" fill="${cols[k]}"/>`;
+      }
+      top += `<circle cx="${x}" cy="${y}" r="1.8" fill="#e3a72f"/>`;
+    });
+  }
+  return `<g transform="translate(0 3) scale(${f.cross === 'huesos' ? 1 : 1.25})">${back}</g>` + skull + top;
+}
+
+function renderFlag() {
+  $('#flagCloth').setAttribute('fill', FLAG.color);
+  $('#emblem').innerHTML = emblem(FLAG);
+}
+function initFlag() { renderFlag(); }
+
+document.querySelectorAll('#flagOpts .optList').forEach(list => {
+  list.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    FLAG[list.dataset.key] = b.dataset.v;
+    list.querySelectorAll('button').forEach(x => x.classList.toggle('sel', x === b));
+    renderFlag(); SFX.tap();
+  });
+});
+$('#izarBtn').addEventListener('click', () => {
+  $('#flagOpts').classList.add('gone');
+  $('#flagG').style.transform = 'translateY(0px)';
+  SFX.whoosh(); vib(40);
+  setTimeout(() => {
+    const st = $('#flagStage'), wr = st.getBoundingClientRect(), sc = st.closest('.screen').getBoundingClientRect();
+    burst(st.closest('.screen'), wr.left - sc.left + wr.width * .55, wr.top - sc.top + wr.height * .3, 16);
+    completeIsland(1);
+  }, reduced ? 100 : 1900);
+});
+
+/* =====================================================
+   3c. TORMENTA (mini-juego)
+   ===================================================== */
+const G = {running: false, done: false, raf: 0, coins: 0};
+const DUR = 20;
+const laneX = i => G.W * (i + .5) / 3;
+
+function initGame() {
+  const cv = $('#game'), wrap = $('#gameWrap');
+  const w = wrap.clientWidth, h = Math.round(Math.min(window.innerHeight * .56, w * 1.3, 560));
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.height = h + 'px';
+  G.ctx = cv.getContext('2d'); G.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  G.W = w; G.H = h; G.shipY = h - 64;
+  if (!G.done) resetGame();
+  draw();
+}
+function resetGame() {
+  Object.assign(G, {lane: 1, shipX: laneX(1), objs: [], pops: [], t: 0, coins: 0, hits: 0, flash: 0, bolt: null,
+    nextFlash: 2.5, shake: 0, red: 0, spawn: .7, off: 0, last: null});
+  G.rain = Array.from({length: 60}, () => ({x: Math.random() * G.W, y: Math.random() * G.H, l: 8 + Math.random() * 10, s: 500 + Math.random() * 300}));
+  $('#gOverlay').classList.add('show');
+  updateHud();
+}
+function startGame() {
+  resetGame();
+  $('#gOverlay').classList.remove('show');
+  G.running = true;
+  G.raf = requestAnimationFrame(loop);
+}
+function stopGame() {
+  if (!G.running) return;
+  G.running = false; cancelAnimationFrame(G.raf);
+}
+function loop(ts) {
+  if (!G.running) return;
+  if (G.last == null) G.last = ts;
+  const dt = Math.min(.05, (ts - G.last) / 1000); G.last = ts;
+  step(dt); draw();
+  if (G.running) G.raf = requestAnimationFrame(loop);
+}
+function rockShape() { return Array.from({length: 8}, (_, i) => [i / 8 * Math.PI * 2, 17 + Math.random() * 8]); }
+function spawnRow() {
+  const lanes = [0, 1, 2].sort(() => Math.random() - .5);
+  const rocks = (G.t > 8 && Math.random() < .3) ? 2 : 1;
+  for (let i = 0; i < rocks; i++) G.objs.push({type: 'rock', lane: lanes[i], y: -40, shape: rockShape()});
+  if (Math.random() < .75) G.objs.push({type: 'coin', lane: lanes[2], y: -40 - Math.random() * 50, seed: Math.random() * 6});
+}
+function makeBolt() {
+  let x = G.W * (.2 + Math.random() * .6), y = 0; const pts = [[x, y]];
+  while (y < G.H * .55) { y += 22 + Math.random() * 18; x += (Math.random() - .5) * 44; pts.push([x, y]); }
+  return pts;
+}
+function step(dt) {
+  G.t += dt;
+  const sc = G.H / 520, speed = (210 + Math.min(G.t, DUR) * 7) * sc;
+  G.off += speed * dt * .5;
+  if (G.t < DUR) {
+    G.spawn -= dt;
+    if (G.spawn <= 0) { spawnRow(); G.spawn = Math.max(.6, 1.0 - G.t * .02); }
+  }
+  G.shipX += (laneX(G.lane) - G.shipX) * Math.min(1, dt * 14);
+  const shipLane = Math.max(0, Math.min(2, Math.round(G.shipX / G.W * 3 - .5)));
+  for (const o of G.objs) {
+    o.y += speed * dt;
+    if (!o.gone && o.lane === shipLane && Math.abs(o.y - (G.shipY - 10)) < 30) {
+      o.gone = true;
+      if (o.type === 'rock') {
+        G.hits++; G.shake = .35; G.red = .35; SFX.hit(); vib(90);
+        G.pops.push({x: G.shipX, y: G.shipY - 56, txt: '¡Ay!', life: 1, c: '#ffd2cc'});
+      } else {
+        G.coins++; SFX.coin();
+        G.pops.push({x: laneX(o.lane), y: o.y - 14, txt: '+1', life: 1, c: '#ffd76a'});
+      }
+    }
+  }
+  G.objs = G.objs.filter(o => !o.gone && o.y < G.H + 60);
+  G.pops.forEach(p => { p.life -= dt * 1.4; p.y -= 40 * dt; });
+  G.pops = G.pops.filter(p => p.life > 0);
+  G.rain.forEach(r => { r.y += r.s * dt; r.x -= r.s * dt * .25; if (r.y > G.H) { r.y = -10; r.x = Math.random() * (G.W + 60); } });
+  if (G.t >= G.nextFlash && G.t < DUR) { G.flash = 1; G.nextFlash = G.t + 3 + Math.random() * 3.5; G.bolt = makeBolt(); SFX.thunder(); }
+  G.flash = Math.max(0, G.flash - dt * 2.5); G.shake = Math.max(0, G.shake - dt); G.red = Math.max(0, G.red - dt);
+  updateHud();
+  if (G.t >= DUR && G.objs.length === 0) finishGame();
+}
+function updateHud() {
+  $('#gCoins').textContent = G.coins || 0;
+  $('#gBar').style.width = Math.min(100, (G.t || 0) / DUR * 100) + '%';
+}
+function finishGame() {
+  G.running = false; G.done = true; cancelAnimationFrame(G.raf);
+  G.flash = 0; G.red = 0; G.shake = 0; draw();
+  const ov = $('#gOverlay');
+  ov.innerHTML = '<div class="big">¡Saliste de la tormenta!</div>';
+  ov.classList.add('show');
+  completeIsland(2);
+}
+function drawShip(c, x, y) {
+  c.save(); c.translate(x, y + Math.sin((G.t || 0) * 5) * 2);
+  c.strokeStyle = 'rgba(255,255,255,.45)'; c.lineWidth = 2;
+  c.beginPath(); c.arc(-16, 26, 10, Math.PI * .15, Math.PI * .85); c.stroke();
+  c.beginPath(); c.arc(16, 26, 10, Math.PI * .15, Math.PI * .85); c.stroke();
+  c.fillStyle = '#8a5a2b'; c.strokeStyle = '#1d120a'; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(-26, 4); c.lineTo(26, 4); c.lineTo(17, 22); c.lineTo(-17, 22); c.closePath(); c.fill(); c.stroke();
+  c.strokeStyle = '#5e3b1a'; c.beginPath(); c.moveTo(-22, 12); c.lineTo(22, 12); c.stroke();
+  c.strokeStyle = '#1d120a'; c.lineWidth = 2.5; c.beginPath(); c.moveTo(0, 4); c.lineTo(0, -46); c.stroke();
+  c.fillStyle = '#f4e7c9'; c.lineWidth = 1.8;
+  c.beginPath(); c.moveTo(3, -40); c.quadraticCurveTo(28, -24, 3, -4); c.closePath(); c.fill(); c.stroke();
+  c.beginPath(); c.moveTo(-3, -34); c.quadraticCurveTo(-19, -22, -3, -8); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = FLAG.color; c.beginPath(); c.arc(11, -22, 5, 0, 7); c.fill();
+  c.fillStyle = '#f6efdc'; c.beginPath(); c.arc(11, -23, 2, 0, 7); c.fill();
+  c.fillStyle = FLAG.color; c.strokeStyle = '#f4e7c9'; c.lineWidth = 1;
+  c.beginPath(); c.moveTo(0, -46); c.lineTo(-17, -42 + Math.sin((G.t || 0) * 8) * 1.5); c.lineTo(0, -37); c.closePath(); c.fill(); c.stroke();
+  c.restore();
+}
+function drawRock(c, x, y, sh) {
+  c.fillStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.ellipse(x, y + 16, 30, 8, 0, 0, 7); c.fill();
+  c.fillStyle = '#56606b'; c.strokeStyle = '#22282d'; c.lineWidth = 2;
+  c.beginPath();
+  sh.forEach(([a, r], i) => { const px = x + Math.cos(a) * r, py = y + Math.sin(a) * r * .85; i ? c.lineTo(px, py) : c.moveTo(px, py); });
+  c.closePath(); c.fill(); c.stroke();
+  c.strokeStyle = 'rgba(255,255,255,.25)'; c.beginPath(); c.moveTo(x - 10, y - 8); c.lineTo(x + 2, y - 14); c.stroke();
+}
+function drawCoin(c, x, y, seed) {
+  c.fillStyle = 'rgba(255,215,106,.18)'; c.beginPath(); c.arc(x, y, 19, 0, 7); c.fill();
+  const sx = Math.max(.2, Math.abs(Math.cos((G.t || 0) * 4 + seed)));
+  c.save(); c.translate(x, y); c.scale(sx, 1);
+  c.fillStyle = '#e3a72f'; c.strokeStyle = '#8a5a10'; c.lineWidth = 2;
+  c.beginPath(); c.arc(0, 0, 11, 0, 7); c.fill(); c.stroke();
+  c.strokeStyle = '#fff1b0'; c.lineWidth = 1.4; c.beginPath(); c.arc(0, 0, 6.5, 0, 7); c.stroke();
+  c.restore();
+}
+function draw() {
+  const c = G.ctx, W = G.W, H = G.H; if (!c) return;
+  c.save();
+  if (G.shake > 0) c.translate((Math.random() - .5) * 12 * G.shake / .35, (Math.random() - .5) * 6 * G.shake / .35);
+  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0f2233'); g.addColorStop(1, '#1f4e6b');
+  c.fillStyle = g; c.fillRect(-12, -12, W + 24, H + 24);
+  c.strokeStyle = 'rgba(191,221,226,.16)'; c.lineWidth = 2;
+  for (let i = 0; i < Math.ceil(H / 46) + 2; i++) {
+    const y = ((i * 46 + G.off) % (H + 46)) - 23;
+    c.beginPath();
+    for (let x = -20 + (i % 2) * 20; x < W + 40; x += 40) { c.moveTo(x, y); c.quadraticCurveTo(x + 10, y - 7, x + 20, y); }
+    c.stroke();
+  }
+  for (const o of G.objs) o.type === 'rock' ? drawRock(c, laneX(o.lane), o.y, o.shape) : drawCoin(c, laneX(o.lane), o.y, o.seed);
+  drawShip(c, G.shipX, G.shipY);
+  c.strokeStyle = 'rgba(220,235,245,.35)'; c.lineWidth = 1.2; c.beginPath();
+  for (const r of G.rain) { c.moveTo(r.x, r.y); c.lineTo(r.x - r.l * .25, r.y + r.l); }
+  c.stroke();
+  c.textAlign = 'center'; c.font = '24px "Pirata One", Georgia, serif';
+  for (const p of G.pops) { c.globalAlpha = Math.max(0, p.life); c.fillStyle = p.c; c.fillText(p.txt, p.x, p.y); }
+  c.globalAlpha = 1;
+  if (G.flash > .55 && G.bolt) {
+    c.strokeStyle = '#fff'; c.lineWidth = 3; c.shadowColor = '#fff'; c.shadowBlur = 14;
+    c.beginPath(); G.bolt.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.stroke(); c.shadowBlur = 0;
+  }
+  if (G.flash > 0) { c.fillStyle = `rgba(255,255,255,${G.flash * .45})`; c.fillRect(-12, -12, W + 24, H + 24); }
+  if (G.red > 0) { c.fillStyle = `rgba(184,50,42,${G.red * .6})`; c.fillRect(-12, -12, W + 24, H + 24); }
+  if (G.running && G.t < 4) {
+    c.globalAlpha = 1 - G.t / 4; c.fillStyle = 'rgba(244,231,201,.85)'; c.font = '30px Georgia, serif';
+    c.fillText('◀', 28, H - 18); c.fillText('▶', W - 28, H - 18); c.globalAlpha = 1;
+  }
+  c.restore();
+}
+$('#gStart').addEventListener('click', startGame);
+$('#game').addEventListener('pointerdown', e => {
+  if (!G.running) return;
+  e.preventDefault();
+  const r = e.currentTarget.getBoundingClientRect();
+  G.lane = (e.clientX - r.left < r.width / 2) ? Math.max(0, G.lane - 1) : Math.min(2, G.lane + 1);
+  SFX.tap();
+});
+document.addEventListener('keydown', e => {
+  if (!G.running) return;
+  if (e.key === 'ArrowLeft') G.lane = Math.max(0, G.lane - 1);
+  if (e.key === 'ArrowRight') G.lane = Math.min(2, G.lane + 1);
+});
+
+/* =====================================================
+   3d. ESCARBAR Y ABRIR EL COFRE
+   ===================================================== */
+const D = {ready: false, revealed: false, opened: false, drawing: false, last: null, moves: 0};
+function initDig() {
+  if (D.revealed) return;
+  const cv = $('#sand'), box = $('#dig');
+  const w = box.clientWidth, h = box.clientHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  Object.assign(D, {c, w, h});
+  c.globalCompositeOperation = 'source-over';
+  const g = c.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, w * .7);
+  g.addColorStop(0, '#ead39c'); g.addColorStop(1, '#d6b673');
+  c.fillStyle = g; c.fillRect(0, 0, w, h);
+  for (let i = 0; i < 1500; i++) {
+    c.fillStyle = Math.random() < .5 ? 'rgba(130,90,40,.24)' : 'rgba(255,246,218,.45)';
+    c.beginPath(); c.arc(Math.random() * w, Math.random() * h, Math.random() * 1.6 + .3, 0, 7); c.fill();
+  }
+  const shell = (x, y) => {
+    c.fillStyle = '#f6ddd0'; c.strokeStyle = INK; c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(x - 10, y + 4); c.bezierCurveTo(x - 10, y - 10, x + 10, y - 10, x + 10, y + 4); c.closePath(); c.fill(); c.stroke();
+    c.beginPath(); c.moveTo(x, y + 4); c.lineTo(x, y - 6); c.moveTo(x - 5, y + 4); c.lineTo(x - 3, y - 5); c.moveTo(x + 5, y + 4); c.lineTo(x + 3, y - 5); c.stroke();
+  };
+  shell(w * .22, h * .24); shell(w * .8, h * .74);
+  c.fillStyle = '#ec9a6d'; c.strokeStyle = INK; c.lineWidth = 1.2; c.beginPath();
+  for (let k = 0; k < 10; k++) {
+    const a = k * Math.PI / 5 - Math.PI / 2, r = k % 2 ? 4 : 11;
+    const px = w * .76 + Math.cos(a) * r, py = h * .22 + Math.sin(a) * r;
+    k ? c.lineTo(px, py) : c.moveTo(px, py);
+  }
+  c.closePath(); c.fill(); c.stroke();
+  const s = w * .14;
+  c.strokeStyle = '#b8322a'; c.lineWidth = 12; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(w / 2 - s, h / 2 - s); c.lineTo(w / 2 + s, h / 2 + s); c.moveTo(w / 2 + s, h / 2 - s); c.lineTo(w / 2 - s, h / 2 + s); c.stroke();
+  D.ready = true;
+}
+const sandCv = $('#sand');
+const ptOf = e => { const r = sandCv.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; };
+function scratch(a, b) {
+  const c = D.c;
+  c.globalCompositeOperation = 'destination-out';
+  c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = D.w * .14;
+  c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x + .01, b.y); c.stroke();
+}
+function checkDig() {
+  if (D.revealed) return;
+  const data = D.c.getImageData(0, 0, sandCv.width, sandCv.height).data;
+  let clear = 0, total = 0;
+  for (let i = 3; i < data.length; i += 4 * 23) { total++; if (data[i] < 40) clear++; }
+  const pct = clear / total;
+  $('#digHint').textContent = `Escarbando… ${Math.min(100, Math.round(pct / .5 * 100))}%`;
+  if (pct > .5) revealChest();
+}
+sandCv.addEventListener('pointerdown', e => {
+  if (!D.ready || D.revealed) return;
+  e.preventDefault();
+  D.drawing = true;
+  try { sandCv.setPointerCapture(e.pointerId); } catch (_) {}
+  const p = ptOf(e); D.last = p; scratch(p, p);
+});
+sandCv.addEventListener('pointermove', e => {
+  if (!D.drawing) return;
+  const p = ptOf(e); scratch(D.last, p); D.last = p;
+  if (++D.moves % 8 === 0) { checkDig(); if (D.moves % 24 === 0) vib(8); }
+});
+const endDig = () => { if (D.drawing) { D.drawing = false; checkDig(); } };
+sandCv.addEventListener('pointerup', endDig);
+sandCv.addEventListener('pointercancel', endDig);
+
+function revealChest() {
+  D.revealed = true; D.drawing = false;
+  sandCv.style.opacity = 0; sandCv.style.pointerEvents = 'none';
+  $('#digHint').textContent = '¡Ahí está! Toca el cofre para abrirlo';
+  $('#chestSvg').classList.add('wiggle');
+  SFX.click(); vib(60);
+}
+$('#chestSvg').addEventListener('click', () => {
+  if (!D.revealed || D.opened) return;
+  D.opened = true;
+  $('#chestSvg').classList.remove('wiggle');
+  $('#lid').classList.add('open');
+  $('#rays').classList.add('on');
+  $('#digHint').textContent = '';
+  SFX.chest(); vib([40, 60, 40]);
+  const wr = $('#digWrap');
+  setTimeout(() => burst(wr, wr.clientWidth / 2, wr.clientHeight * .46, 26), 250);
+  setTimeout(() => completeIsland(3), 1500);
+});
+
+/* =====================================================
+   4. FINAL
+   ===================================================== */
+function flagPortrait() {
+  return `<svg viewBox="-70 -50 140 100" preserveAspectRatio="xMidYMid slice"><rect x="-70" y="-50" width="140" height="100" fill="${FLAG.color}"/>
+    <g transform="translate(0 6)">${emblem(FLAG)}</g></svg>`;
+}
+let typingTimer = null;
+function typeLetter(box, paras) {
+  clearTimeout(typingTimer);
+  box.innerHTML = '';
+  const items = paras.map(t => { const p = document.createElement('p'); box.appendChild(p); return {p, t}; });
+  let pi = 0, ci = 0, skip = reduced;
+  return new Promise(resolve => {
+    box.onclick = () => { skip = true; };
+    (function step() {
+      if (skip) { items.forEach(o => o.p.textContent = o.t); box.onclick = null; return resolve(); }
+      if (pi >= items.length) { box.onclick = null; return resolve(); }
+      const o = items[pi]; ci++;
+      o.p.textContent = o.t.slice(0, ci);
+      if (ci >= o.t.length) { pi++; ci = 0; typingTimer = setTimeout(step, 420); }
+      else typingTimer = setTimeout(step, 28);
+    })();
+  });
+}
+async function openFinal() {
+  showScreen('final');
+  $('#pName').textContent = CONFIG.para;
+  const fr = $('#pFrame');
+  if (CONFIG.foto) {
+    const img = new Image(); img.alt = CONFIG.para; img.src = CONFIG.foto;
+    img.onerror = () => { fr.innerHTML = flagPortrait(); };
+    fr.innerHTML = ''; fr.appendChild(img);
+  } else fr.innerHTML = flagPortrait();
+  SFX.chest();
+  const scr = $('#final');
+  setTimeout(() => burst(scr, scr.clientWidth / 2, 170, 30), 300);
+
+  const st = $('#secretTxt'); st.innerHTML = '';
+  const spans = CONFIG.fragmentos.map(f => { const s = document.createElement('span'); s.textContent = f + ' '; st.appendChild(s); return s; });
+  const sign = $('#sign'), de = (CONFIG.de || '').trim();
+  sign.textContent = de ? `Con cariño, desde Cali, ${de}` : 'Con cariño, desde Cali';
+  sign.classList.remove('show'); $('#endRow').classList.remove('show'); $('#letter').innerHTML = '';
+  await wait(reduced ? 0 : 1600);
+  for (const s of spans) { s.classList.add('in'); await wait(reduced ? 0 : 1100); }
+  await wait(reduced ? 0 : 500);
+  await typeLetter($('#letter'), [`${CONFIG.corto}:`, ...CONFIG.carta]);
+  sign.classList.add('show');
+  await wait(900);
+  $('#endRow').classList.add('show');
+}
+$('#restartBtn').addEventListener('click', () => location.reload());
+
+/* =====================================================
+   ARRANQUE
+   ===================================================== */
+buildMap();
+buildFrags();
+renderFlag();
+</script>
+</body>
+</html>
